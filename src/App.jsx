@@ -892,31 +892,16 @@ const Etiquetas = () => {
 export default function FerazApp() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modulo, setModulo] = useState("inicio");
-  const [seeded, setSeeded] = useState(false);
 
-  const [recetas,      , readyR] = useCollection("recetas");
-  const [ingredientes, , readyI] = useCollection("ingredientes");
-  const [productos,    , readyP]   = useCollection("productos");
-  const [pedidos,      , readyPed] = useCollection("pedidos");
-  const [clientes,     , readyC]   = useCollection("clientes");
-  const [eventos,      , readyE]   = useCollection("eventos");
+  const recetas = useCollection("recetas", seedRecetas);
+  const ingredientes = useCollection("ingredientes", seedIngredientes);
+  const productos = useCollection("productos", seedProductos);
+  const pedidos = useCollection("pedidos", seedPedidos);
+  const clientes = useCollection("clientes", seedClientes);
+  const eventos = useCollection("eventos", seedEventos);
 
   // Listo cuando al menos 3 colecciones responden (evita bloqueo total)
-  const allReady = [readyR, readyI, readyP, readyPed, readyC, readyE].filter(Boolean).length >= 3;
 
-  useEffect(() => {
-    if (!allReady || seeded) return;
-    const doSeed = async () => {
-      if (recetas.length===0) for (const r of seedRecetas) await upsert("recetas", r.id, r);
-      if (ingredientes.length===0) for (const i of seedIngredientes) await upsert("ingredientes", i.id, i);
-      if (productos.length===0) for (const p of seedProductos) await upsert("productos", p.id, p);
-      if (pedidos.length===0) for (const p of seedPedidos) await upsert("pedidos", p.id, p);
-      if (clientes.length===0) for (const c of seedClientes) await upsert("clientes", c.id, c);
-      if (eventos.length===0) for (const e of seedEventos) await upsert("eventos", e.id, e);
-      setSeeded(true);
-    };
-    doSeed();
-  }, [allReady]);
 
   const nav = [
     { id:"inicio",     label:"Inicio",         icon:"home" },
