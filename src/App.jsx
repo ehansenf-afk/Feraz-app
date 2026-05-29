@@ -901,7 +901,8 @@ export default function FerazApp() {
   const [clientes,     , readyC]   = useCollection("clientes");
   const [eventos,      , readyE]   = useCollection("eventos");
 
-  const allReady = readyR && readyI && readyP && readyPed && readyC && readyE;
+  // Listo cuando al menos 3 colecciones responden (evita bloqueo total)
+  const allReady = [readyR, readyI, readyP, readyPed, readyC, readyE].filter(Boolean).length >= 3;
 
   useEffect(() => {
     if (!allReady || seeded) return;
