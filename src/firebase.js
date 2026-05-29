@@ -22,35 +22,43 @@ export const remove = async (col, id) => {
   await deleteDoc(doc(db, col, String(id)));
 };
 
-// Versión robusta: usa onSnapshot con timeout de seguridad
 export const useCollection = (col) => {
   const [data, setData] = useState([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Timeout de seguridad: si en 8 segundos no responde, igual marcamos ready
-    const timeout = setTimeout(() => {
-      setReady(true);
-    }, 8000);
+    let done = false;
 
+    // Estrategia 1: getDocs rápido para carga inicial
+    getDocs(collection(db, col))
+      .then(snap => {
+        if (!done) {
+          setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
+          setReady(true);
+        }
+      })
+      .catch(() => {
+        if (!done) setReady(true);
+      });
+
+    // Estrategia 2: onSnapshot para actualizaciones en tiempo real
     const unsub = onSnapshot(
       collection(db, col),
       (snap) => {
-        clearTimeout(timeout);
+        done = true;
         setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
         setReady(true);
       },
-      (error) => {
-        clearTimeout(timeout);
-        console.error(`Error en colección ${col}:`, error);
-        setReady(true); // igual seguimos para no bloquear la app
+      (err) => {
+        console.error(col, err);
+        setReady(true);
       }
     );
 
-    return () => {
-      clearTimeout(timeout);
-      unsub();
-    };
+    // Timeout absoluto: 5 segundos máximo
+    const t = setTimeout(() => { setReady(true); }, 5000);
+
+    return () => { clearTimeout(t); unsub(); };
   }, [col]);
 
   return [data, ready];
