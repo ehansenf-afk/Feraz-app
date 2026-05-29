@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "firebase/firestore";
 import { useState, useEffect } from "react";
 
 const firebaseConfig = {
@@ -15,51 +15,33 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 export const upsert = async (col, id, data) => {
-  await setDoc(doc(db, col, String(id)), data, { merge: true });
+  try { await setDoc(doc(db, col, String(id)), data, { merge: true }); } catch(e) { console.error(e); }
 };
 
 export const remove = async (col, id) => {
-  await deleteDoc(doc(db, col, String(id)));
+  try { await deleteDoc(doc(db, col, String(id))); } catch(e) { console.error(e); }
 };
 
-export const useCollection = (col) => {
-  const [data, setData] = useState([]);
-  const [ready, setReady] = useState(false);
+// Arranca INMEDIATAMENTE con datos locales, sincroniza en segundo plano
+export const useCollection = (col, seedData = []) => {
+  const [data, setData] = useState(seedData);
 
   useEffect(() => {
-    let done = false;
-
-    // Estrategia 1: getDocs rápido para carga inicial
-    getDocs(collection(db, col))
-      .then(snap => {
-        if (!done) {
-          setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
-          setReady(true);
-        }
-      })
-      .catch(() => {
-        if (!done) setReady(true);
-      });
-
-    // Estrategia 2: onSnapshot para actualizaciones en tiempo real
-    const unsub = onSnapshot(
-      collection(db, col),
-      (snap) => {
-        done = true;
-        setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
-        setReady(true);
-      },
-      (err) => {
-        console.error(col, err);
-        setReady(true);
-      }
-    );
-
-    // Timeout absoluto: 5 segundos máximo
-    const t = setTimeout(() => { setReady(true); }, 5000);
-
-    return () => { clearTimeout(t); unsub(); };
+    try {
+      const unsub = onSnapshot(
+        collection(db, col),
+        (snap) => {
+          if (snap.docs.length > 0) {
+            setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
+          }
+        },
+        (err) => console.error(`Firebase ${col}:`, err)
+      );
+      return unsub;
+    } catch(e) {
+      console.error(e);
+    }
   }, [col]);
 
-  return [data, ready];
+  return data;
 };
