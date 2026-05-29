@@ -504,8 +504,6 @@ const Almacen = ({ ingredientes, setIngredientes, productos, setProductos }) => 
           </div>
           {filtrados.map(ing=>{
             const bajo=ing.stock<=ing.minimo;
-            const edIng = editIngId===ing.id ? ing : null;
-            const [editVal, setEditVal] = useState(ing);
             return (
               <Card key={ing.id} style={{ borderLeft:bajo?`4px solid ${C.terracota}`:`4px solid ${C.musgo}33` }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: editIngId===ing.id?12:0 }}>
