@@ -15,33 +15,22 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 export const upsert = async (col, id, data) => {
-  try { await setDoc(doc(db, col, String(id)), data, { merge: true }); } catch(e) { console.error(e); }
+  try { await setDoc(doc(db, col, String(id)), data, { merge: true }); } catch(e) {}
 };
 
 export const remove = async (col, id) => {
-  try { await deleteDoc(doc(db, col, String(id))); } catch(e) { console.error(e); }
+  try { await deleteDoc(doc(db, col, String(id))); } catch(e) {}
 };
 
-// Arranca INMEDIATAMENTE con datos locales, sincroniza en segundo plano
-export const useCollection = (col, seedData = []) => {
-  const [data, setData] = useState(seedData);
-
+export const useFS = (col, seed) => {
+  const [data, setData] = useState(seed);
   useEffect(() => {
     try {
-      const unsub = onSnapshot(
-        collection(db, col),
-        (snap) => {
-          if (snap.docs.length > 0) {
-            setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
-          }
-        },
-        (err) => console.error(`Firebase ${col}:`, err)
-      );
-      return unsub;
-    } catch(e) {
-      console.error(e);
-    }
-  }, [col]);
-
-  return data;
+      return onSnapshot(collection(db, col), snap => {
+        if (snap.docs.length > 0)
+          setData(snap.docs.map(d => ({ ...d.data(), _fid: d.id })));
+      }, () => {});
+    } catch(e) {}
+  }, []);
+  return [data, setData];
 };
