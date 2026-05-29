@@ -4,43 +4,12 @@ import { upsert, remove, useFS } from "./firebase.js";
 const C = { musgo:"#4A5D23", musgoClaro:"#5E7A2C", terracota:"#C16748", crema:"#F2E8D5", noche:"#2C2638", neutral:"#E8DCC8", gris:"#666666", blanco:"#FFFFFF" };
 
 // ─── DATOS SEMILLA ──────────────────────────────────────────────
-const sRecetas = [
-  { id:"r1", nombre:"Noche Serena", tipo:"Bruma", volumen:"50ml", intencion:"Relajación total antes de dormir", ingredientes:[{id:"i1",nombre:"Alcohol de Cereal",cantidad:45,unidad:"ml"},{id:"i6",nombre:"Aceite Esencial Jazmín",cantidad:2,unidad:"ml"}], notas:"Rociar sobre ropa de cama." },
-  { id:"r2", nombre:"Refugio de Invierno", tipo:"Bruma", volumen:"50ml", intencion:"Aroma cálido y especiado", ingredientes:[{id:"i1",nombre:"Alcohol de Cereal",cantidad:46,unidad:"ml"},{id:"i4",nombre:"Mezcla Moroccan Especias",cantidad:4,unidad:"ml"}], notas:"Rociar en ambiente del hogar." },
-  { id:"r3", nombre:"Jardín de Agua", tipo:"Bruma", volumen:"50ml", intencion:"Purificar el ambiente", ingredientes:[{id:"i1",nombre:"Alcohol de Cereal",cantidad:44,unidad:"ml"},{id:"i8",nombre:"Aceite Esencial Tangerina",cantidad:2,unidad:"ml"}], notas:"Agitar antes de usar." },
-  { id:"r4", nombre:"Paz Interior", tipo:"Bruma", volumen:"50ml", intencion:"Meditación y yoga", ingredientes:[{id:"i1",nombre:"Alcohol de Cereal",cantidad:44,unidad:"ml"},{id:"i6",nombre:"Aceite Esencial Jazmín",cantidad:2,unidad:"ml"}], notas:"Rociar alrededor del espacio." },
-  { id:"r5", nombre:"Sueño del Bosque", tipo:"Roll-on", volumen:"10ml", intencion:"Sueño reparador", ingredientes:[{id:"i2",nombre:"Aceite de Almendras",cantidad:8,unidad:"ml"},{id:"i5",nombre:"Mezcla Olor a Bosque",cantidad:2,unidad:"ml"}], notas:"Aplicar en muñecas." },
-];
-const sIngredientes = [
-  { id:"i1", nombre:"Alcohol de Cereal", stock:500, unidad:"ml", minimo:100, costo:8500, categoria:"Base" },
-  { id:"i2", nombre:"Aceite de Almendras", stock:200, unidad:"ml", minimo:50, costo:6200, categoria:"Base" },
-  { id:"i3", nombre:"Mezcla Flores Místicas", stock:30, unidad:"ml", minimo:10, costo:12000, categoria:"Mezcla" },
-  { id:"i4", nombre:"Mezcla Moroccan Especias", stock:25, unidad:"ml", minimo:10, costo:11500, categoria:"Mezcla" },
-  { id:"i5", nombre:"Mezcla Olor a Bosque", stock:20, unidad:"ml", minimo:10, costo:13000, categoria:"Mezcla" },
-  { id:"i6", nombre:"Aceite Esencial Jazmín", stock:15, unidad:"ml", minimo:5, costo:18000, categoria:"Esencial" },
-  { id:"i7", nombre:"Aceite Esencial Rosa", stock:10, unidad:"ml", minimo:5, costo:22000, categoria:"Esencial" },
-  { id:"i8", nombre:"Aceite Esencial Tangerina", stock:20, unidad:"ml", minimo:5, costo:9500, categoria:"Esencial" },
-  { id:"i9", nombre:"Aceite Esencial Cedrón", stock:18, unidad:"ml", minimo:5, costo:10500, categoria:"Esencial" },
-  { id:"i10", nombre:"Aceite Esencial Bergamota", stock:12, unidad:"ml", minimo:5, costo:14000, categoria:"Esencial" },
-];
-const sProductos = [
-  { id:"p1", nombre:"Noche Serena", tipo:"Bruma", stock:5, precio:9900, costo:2800 },
-  { id:"p2", nombre:"Refugio de Invierno", tipo:"Bruma", stock:3, precio:9900, costo:2600 },
-  { id:"p3", nombre:"Jardín de Agua", tipo:"Bruma", stock:8, precio:9900, costo:3100 },
-  { id:"p4", nombre:"Paz Interior", tipo:"Bruma", stock:2, precio:9900, costo:3400 },
-  { id:"p5", nombre:"Sueño del Bosque", tipo:"Roll-on", stock:6, precio:7900, costo:1800 },
-];
-const sPedidos = [
-  { id:"PED-0001", tipodoc:"Pedido", numero:1, cliente:"Valentina M.", fecha:"2026-05-20", items:[{producto:"Noche Serena",qty:2,precio:9900}], total:19800, estado:"Entregado" },
-  { id:"PED-0002", tipodoc:"Pedido", numero:2, cliente:"Camila R.", fecha:"2026-05-25", items:[{producto:"Jardín de Agua",qty:1,precio:9900}], total:9900, estado:"Pendiente" },
-];
-const sClientes = [
-  { id:"c1", nombre:"Valentina Morales", email:"vale@gmail.com", telefono:"+56 9 8765 4321", compras:3, totalGastado:67800, notas:"Le encantan las brumas nocturnas" },
-  { id:"c2", nombre:"Camila Rojas", email:"cami@gmail.com", telefono:"+56 9 7654 3210", compras:2, totalGastado:51400, notas:"Interesada en roll-ons" },
-];
-const sEventos = [
-  { id:"e1", fecha:"2026-05-30", cliente:"Valentina Morales", tipo:"Entrega", nota:"Entregar pedido Noche Serena" },
-];
+const sRecetas = [];
+const sIngredientes = [];
+const sProductos = [];
+const sPedidos = [];
+const sClientes = [];
+const sEventos = [];
 
 const FRASES = [
   "Cada aroma cuenta una historia 🌸", "El olfato es la memoria del alma 🌿",
